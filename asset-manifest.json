@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/Tic-Tac-Toe/static/css/main.45c8713e.css",
-    "main.js": "/Tic-Tac-Toe/static/js/main.92e3d6b0.js",
-    "static/js/453.856b53fc.chunk.js": "/Tic-Tac-Toe/static/js/453.856b53fc.chunk.js",
-    "index.html": "/Tic-Tac-Toe/index.html",
-    "main.45c8713e.css.map": "/Tic-Tac-Toe/static/css/main.45c8713e.css.map",
-    "main.92e3d6b0.js.map": "/Tic-Tac-Toe/static/js/main.92e3d6b0.js.map",
-    "453.856b53fc.chunk.js.map": "/Tic-Tac-Toe/static/js/453.856b53fc.chunk.js.map"
+    "main.css": "/difficlt-Tic-Tac/static/css/main.45c8713e.css",
+    "main.js": "/difficlt-Tic-Tac/static/js/main.687f27dc.js",
+    "static/js/453.856b53fc.chunk.js": "/difficlt-Tic-Tac/static/js/453.856b53fc.chunk.js",
+    "index.html": "/difficlt-Tic-Tac/index.html",
+    "main.45c8713e.css.map": "/difficlt-Tic-Tac/static/css/main.45c8713e.css.map",
+    "main.687f27dc.js.map": "/difficlt-Tic-Tac/static/js/main.687f27dc.js.map",
+    "453.856b53fc.chunk.js.map": "/difficlt-Tic-Tac/static/js/453.856b53fc.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.45c8713e.css",
-    "static/js/main.92e3d6b0.js"
+    "static/js/main.687f27dc.js"
   ]
 }
