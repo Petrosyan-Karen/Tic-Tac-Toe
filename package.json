@@ -2,7 +2,7 @@
   "name": "react-docs",
   "version": "0.1.0",
   "private": true,
-   "homepage": "https://Petrosyan-Karen.github.io/Tic-Tac-Toe",
+   "homepage": "https://Petrosyan-Karen.github.io/difficlt-Tic-Tac",
   "dependencies": {
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
