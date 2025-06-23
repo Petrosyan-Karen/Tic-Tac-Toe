@@ -1,0 +1,19 @@
+.gameMessage {
+  position: fixed;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%) scale(0.9);
+  background: #58aa15;
+  color: #fff;
+  padding: 18px 36px;
+  border-radius: 12px;
+  font-size: 1.3rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s, transform 0.4s;
+  z-index: 1000;
+}
+.show {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
