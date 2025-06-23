@@ -9,6 +9,9 @@ import {
 import styles from './styles/app.module.css';
 
 export default function App() {
+  const size = 5;
+  const totalSquares = size * size;
+
   function getRandomMarksAndTurn() {
     const humanIsX = Math.random() < 0.5;
     return {
@@ -18,9 +21,7 @@ export default function App() {
   }
 
   const [{ playerMark, computerMark }, setRoles] = useState(getRandomMarksAndTurn());
-  const [history, setHistory] = useState([
-    { squares: Array(9).fill(null), moveLoc: null }
-  ]);
+  const [history, setHistory] = useState([{ squares: Array(totalSquares).fill(null), moveLoc: null }]);
   const [currentMove, setCurrentMove] = useState(0);
   const [asc, setAsc] = useState(true);
   const [level, setLevel] = useState(1);
@@ -29,16 +30,16 @@ export default function App() {
 
   const xIsNext = currentMove % 2 === 0;
   const current = history[currentMove];
-  const winnerObj = calculateWinner(current.squares);
+  const winnerObj = calculateWinner(current.squares, size);
 
   useEffect(() => {
     if (!winnerObj.winner && !current.squares.every(Boolean)) {
       const computerTurn = (xIsNext && computerMark === 'X') || (!xIsNext && computerMark === 'O');
       if (computerTurn) {
         setTimeout(() => {
-          const move = getComputerMove(current.squares, level, computerMark, playerMark);
+          const move = getComputerMove(current.squares, level, computerMark, playerMark, size);
           handlePlay(makeMove(current.squares, move, computerMark), move);
-        }, 500);
+        }, 1500);
       }
     }
     // eslint-disable-next-line
@@ -50,14 +51,11 @@ export default function App() {
   }
 
   function handlePlay(nextSquares, moveIdx) {
-    const nextHistory = [
-      ...history.slice(0, currentMove + 1),
-      { squares: nextSquares, moveLoc: moveIdx }
-    ];
+    const nextHistory = [...history.slice(0, currentMove + 1), { squares: nextSquares, moveLoc: moveIdx }];
     setHistory(nextHistory);
     setCurrentMove(nextHistory.length - 1);
 
-    const winner = calculateWinner(nextSquares).winner;
+    const winner = calculateWinner(nextSquares, size).winner;
     if (winner || nextSquares.every(Boolean)) {
       setTimeout(() => {
         if (winner === playerMark) {
@@ -80,7 +78,7 @@ export default function App() {
         }
         const newRoles = getRandomMarksAndTurn();
         setRoles(newRoles);
-        setHistory([{ squares: Array(9).fill(null), moveLoc: null }]);
+        setHistory([{ squares: Array(totalSquares).fill(null), moveLoc: null }]);
         setCurrentMove(0);
       }, 100);
     }
@@ -90,7 +88,7 @@ export default function App() {
     if (move === 0) {
       const newRoles = getRandomMarksAndTurn();
       setRoles(newRoles);
-      setHistory([{ squares: Array(9).fill(null), moveLoc: null }]);
+      setHistory([{ squares: Array(totalSquares).fill(null), moveLoc: null }]);
       setCurrentMove(0);
     } else {
       setCurrentMove(move);
@@ -99,8 +97,8 @@ export default function App() {
 
   function getMoveLocation(idx) {
     if (idx == null) return null;
-    const row = Math.floor(idx / 3) + 1;
-    const col = (idx % 3) + 1;
+    const row = Math.floor(idx / size) + 1;
+    const col = (idx % size) + 1;
     return `(${row}, ${col})`;
   }
 
@@ -109,15 +107,11 @@ export default function App() {
     if (move === currentMove) {
       desc = <b>You are at move #{move} {move ? getMoveLocation(step.moveLoc) : ""}</b>;
     } else {
-      desc = move ?
-        `Go to move #${move} ${getMoveLocation(step.moveLoc)}` :
-        'Go to game start';
+      desc = move ? `Go to move #${move} ${getMoveLocation(step.moveLoc)}` : 'Go to game start';
     }
     return (
       <li key={move}>
-        {move === currentMove ? desc : (
-          <button onClick={() => jumpTo(move)}>{desc}</button>
-        )}
+        {move === currentMove ? desc : <button onClick={() => jumpTo(move)}>{desc}</button>}
       </li>
     );
   });
@@ -135,6 +129,7 @@ export default function App() {
           winningLine={winnerObj.line}
           playerMark={playerMark}
           computerMark={computerMark}
+          size={size}
         />
       </div>
       <div className={styles.gameInfo}>

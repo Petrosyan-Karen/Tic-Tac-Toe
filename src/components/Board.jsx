@@ -2,23 +2,22 @@ import Square from './Square';
 import styles from '../styles/board.module.css';
 import { calculateWinner } from '../utils/gameHelpers';
 
-export default function Board({ xIsNext, squares, onPlay, winningLine, playerMark, computerMark }) {
+export default function Board({ xIsNext, squares, onPlay, winningLine, playerMark, computerMark, size }) {
   const playerTurn = (xIsNext && playerMark === 'X') || (!xIsNext && playerMark === 'O');
+
   function handleClick(i) {
     if (!playerTurn) return;
-    if (calculateWinner(squares).winner || squares[i]) {
-      return;
-    }
+    if (calculateWinner(squares, size).winner || squares[i]) return;
     const nextSquares = squares.slice();
     nextSquares[i] = xIsNext ? 'X' : 'O';
     onPlay(nextSquares, i);
   }
 
   const boardRows = [];
-  for (let row = 0; row < 3; row++) {
+  for (let row = 0; row < size; row++) {
     const squaresRow = [];
-    for (let col = 0; col < 3; col++) {
-      const idx = row * 3 + col;
+    for (let col = 0; col < size; col++) {
+      const idx = row * size + col;
       squaresRow.push(
         <Square
           key={idx}
@@ -35,7 +34,7 @@ export default function Board({ xIsNext, squares, onPlay, winningLine, playerMar
     );
   }
 
-  const winnerObj = calculateWinner(squares);
+  const winnerObj = calculateWinner(squares, size);
   let status;
   if (winnerObj.winner) {
     status = 'Winner: ' + winnerObj.winner + (winnerObj.winner === playerMark ? " (You)" : " (Computer)");

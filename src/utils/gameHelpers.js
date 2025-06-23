@@ -4,93 +4,88 @@ export function makeMove(squares, idx, player) {
   return next;
 }
 
-export function getComputerMove(squares, level, computerMark, playerMark) {
+export function getComputerMove(squares, level, computerMark, playerMark, size) {
   const empty = squares
     .map((v, i) => (v == null ? i : null))
     .filter(i => i != null);
 
+  // Level 6: fallback to block/win or random for performance
   if (level === 6) {
-    return minimaxRoot(squares, computerMark, playerMark);
-  }
-
-  if (level >= 2) {
     for (let idx of empty) {
       const test = squares.slice();
       test[idx] = computerMark;
-      if (calculateWinner(test).winner === computerMark) return idx;
+      if (calculateWinner(test, size).winner === computerMark) return idx;
     }
     for (let idx of empty) {
       const test = squares.slice();
       test[idx] = playerMark;
-      if (calculateWinner(test).winner === playerMark) return idx;
+      if (calculateWinner(test, size).winner === playerMark) return idx;
+    }
+    if (empty.includes(Math.floor(size * size / 2))) return Math.floor(size * size / 2);
+    return empty[Math.floor(Math.random() * empty.length)];
+  }
+
+  // Level 2-5: try to win/block, otherwise random
+  if (level >= 2) {
+    for (let idx of empty) {
+      const test = squares.slice();
+      test[idx] = computerMark;
+      if (calculateWinner(test, size).winner === computerMark) return idx;
+    }
+    for (let idx of empty) {
+      const test = squares.slice();
+      test[idx] = playerMark;
+      if (calculateWinner(test, size).winner === playerMark) return idx;
     }
     if (level >= 3) {
-      if (empty.includes(4)) return 4;
-      const corners = [0, 2, 6, 8].filter(i => empty.includes(i));
+      if (empty.includes(Math.floor(size * size / 2))) return Math.floor(size * size / 2);
+      const corners = [0, size - 1, size * (size - 1), size * size - 1].filter(i => empty.includes(i));
       if (corners.length && Math.random() < 0.5 + 0.1 * (level - 3)) {
         return corners[Math.floor(Math.random() * corners.length)];
       }
     }
   }
+
+  // Level 1: random
   return empty[Math.floor(Math.random() * empty.length)];
 }
 
-export function minimaxRoot(squares, computerMark, playerMark) {
-  let bestScore = -Infinity;
-  let bestMove = null;
-  for (let i = 0; i < 9; i++) {
-    if (!squares[i]) {
-      const newSquares = squares.slice();
-      newSquares[i] = computerMark;
-      const score = minimax(newSquares, 0, false, computerMark, playerMark);
-      if (score > bestScore) {
-        bestScore = score;
-        bestMove = i;
-      }
+export function calculateWinner(squares, size) {
+  const winLength = 4;
+  const lines = [];
+
+  // Rows
+  for (let r = 0; r < size; r++) {
+    for (let c = 0; c <= size - winLength; c++) {
+      lines.push([...Array(winLength)].map((_, i) => r * size + c + i));
     }
   }
-  return bestMove;
-}
-
-export function minimax(squares, depth, isMaximizing, computerMark, playerMark) {
-  const winnerObj = calculateWinner(squares);
-  if (winnerObj.winner === computerMark) return 10 - depth;
-  if (winnerObj.winner === playerMark) return depth - 10;
-  if (squares.every(Boolean)) return 0;
-
-  if (isMaximizing) {
-    let best = -Infinity;
-    for (let i = 0; i < 9; i++) {
-      if (!squares[i]) {
-        squares[i] = computerMark;
-        best = Math.max(best, minimax(squares, depth + 1, false, computerMark, playerMark));
-        squares[i] = null;
-      }
+  // Columns
+  for (let c = 0; c < size; c++) {
+    for (let r = 0; r <= size - winLength; r++) {
+      lines.push([...Array(winLength)].map((_, i) => (r + i) * size + c));
     }
-    return best;
-  } else {
-    let best = Infinity;
-    for (let i = 0; i < 9; i++) {
-      if (!squares[i]) {
-        squares[i] = playerMark;
-        best = Math.min(best, minimax(squares, depth + 1, true, computerMark, playerMark));
-        squares[i] = null;
-      }
-    }
-    return best;
   }
-}
+  // Diagonals \
+  for (let r = 0; r <= size - winLength; r++) {
+    for (let c = 0; c <= size - winLength; c++) {
+      lines.push([...Array(winLength)].map((_, i) => (r + i) * size + (c + i)));
+    }
+  }
+  // Diagonals /
+  for (let r = 0; r <= size - winLength; r++) {
+    for (let c = winLength - 1; c < size; c++) {
+      lines.push([...Array(winLength)].map((_, i) => (r + i) * size + (c - i)));
+    }
+  }
 
-export function calculateWinner(squares) {
-  const lines = [
-    [0, 1, 2], [3, 4, 5], [6, 7, 8],
-    [0, 3, 6], [1, 4, 7], [2, 5, 8],
-    [0, 4, 8], [2, 4, 6],
-  ];
   for (let i = 0; i < lines.length; i++) {
-    const [a, b, c] = lines[i];
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return { winner: squares[a], line: lines[i] };
+    const line = lines[i];
+    if (
+      squares[line[0]] &&
+      line.every(idx => squares[idx] === squares[line[0]])
+    ) {
+      return { winner: squares[line[0]], line };
     }
   }
   return { winner: null, line: null };
